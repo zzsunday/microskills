@@ -86,6 +86,9 @@ class WorkflowTests(unittest.TestCase):
         mock=bin/'mock'
         mock.write_text('''#!/bin/bash
 set -eu
+if [[ "$0" == *bakta || "$0" == *quast.py ]]; then
+  [[ "$1" == *.fasta && -s "$1" ]] || exit 89
+fi
 out=''; prefix=''
 while (($#)); do
   case "$1" in
@@ -101,12 +104,14 @@ if [[ "$0" == *spades.py ]]; then
   printf '>contig\\nACGT\\n' > "$out/contigs.fasta"
 elif [[ "$0" == *unicycler ]]; then
   printf '>contig\\nACGT\\n' > "$out/assembly.fasta"
+elif [[ "$0" == *quast.py ]]; then
+  printf 'Assembly\\tisolate\\nTotal length\\t4\\nN50\\t4\\n' > "$out/report.tsv"
 else
   for ext in ${MOCK_EXTS:-gff3 gbff faa ffn fna tsv}; do echo output > "$out/$prefix.$ext"; done
 fi
 ''')
         mock.chmod(0o755)
-        for name in ('spades.py','unicycler','bakta'):
+        for name in ('spades.py','unicycler','bakta','quast.py'):
             (bin/name).symlink_to(mock)
         self.env['PATH']=str(bin)+os.pathsep+self.env['PATH']
         for mate in ('R1','R2'):
@@ -119,13 +124,24 @@ fi
         del self.env['SPADES_MEM_GB']
         self.shell('bash "$WGS_SKILL/scripts/run_spades_array.sh" samples.tsv')
         self.assertEqual((self.p/'memory.txt').read_text().strip(),'28')
-        self.assertTrue((self.p/'assembly/isolate/isolate.fna').is_file())
+        self.assertTrue((self.p/'assembly/isolate/isolate.fasta').is_file())
+        self.shell('bash "$WGS_SKILL/scripts/run_quast_array.sh" samples.tsv')
+        self.run_script('summarize_workflow.py', self.manifest, '-o', self.p/'summary.tsv')
+        with (self.p/'summary.tsv').open() as fh:
+            self.assertEqual(next(csv.DictReader(fh, delimiter='\t'))['assembly_status'], 'COMPLETE')
         self.shell('bash "$WGS_SKILL/scripts/run_spades_array.sh" samples.tsv',ok=False)
         db=self.p/'db'; db.mkdir(); self.env['BAKTA_DB']=str(db)
         self.shell('bash "$WGS_SKILL/scripts/run_bakta_array.sh" samples.tsv')
         self.shell('bash "$WGS_SKILL/scripts/run_bakta_array.sh" samples.tsv',ok=False)
+        self.write_manifest(sid='hybrid', long=str(self.r1), platform='ONT')
+        for mate in ('R1','R2'):
+            clean=self.p/f'data/clean/hybrid/hybrid_HQ_{mate}.fq.gz'
+            clean.parent.mkdir(parents=True,exist_ok=True); clean.write_text('mock')
+        self.shell('bash "$WGS_SKILL/scripts/run_unicycler_array.sh" samples.tsv')
+        self.assertEqual((self.p/'assembly/hybrid/hybrid.fasta').read_text(), '>contig\nACGT\n')
+        self.assertTrue((self.p/'assembly/hybrid/unicycler/assembly.fasta').is_file())
         self.write_manifest(sid='partial')
-        asm=self.p/'assembly/partial/partial.fna'; asm.parent.mkdir(); asm.write_text('>contig\nACGT\n')
+        asm=self.p/'assembly/partial/partial.fasta'; asm.parent.mkdir(); asm.write_text('>contig\nACGT\n')
         self.env['MOCK_EXTS']='gff3'
         self.shell('bash "$WGS_SKILL/scripts/run_bakta_array.sh" samples.tsv',ok=False)
 

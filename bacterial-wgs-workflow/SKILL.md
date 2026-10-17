@@ -466,13 +466,14 @@ Use current project paths; never hard-code the historical sample/directory.
 All assembly branches must expose:
 
 ```text
-assembly/<sample>/<sample>.fna
+assembly/<sample>/<sample>.fasta
 ```
 
 Create it safely from SPAdes `spades/contigs.fasta` or Unicycler
 `unicycler/assembly.fasta` without deleting the original.
 
 Downstream QC and annotation must use the canonical FASTA.
+Use the actual sample ID as the filename, for example `assembly/SA001/SA001.fasta`.
 
 ## 21. SPAdes policy
 
@@ -507,7 +508,7 @@ Run QUAST for each successful assembly:
 
 ```bash
 quast.py \
-  "assembly/${sample}/${sample}.fna" \
+  "assembly/${sample}/${sample}.fasta" \
   -o "qc/quast/${sample}" \
   -t "${CPUS}"
 ```
@@ -562,7 +563,7 @@ Standard command:
 
 ```bash
 bakta \
-  "assembly/${sample}/${sample}.fna" \
+  "assembly/${sample}/${sample}.fasta" \
   --db "${BAKTA_DB}" \
   --keep-contig-headers \
   --threads "${CPUS}" \
@@ -854,7 +855,7 @@ proceed autonomously:
              assembly.fasta
                       │
                       ▼
-        assembly/<sample>/<sample>.fna
+        assembly/<sample>/<sample>.fasta
                       │
                       ▼
                     QUAST

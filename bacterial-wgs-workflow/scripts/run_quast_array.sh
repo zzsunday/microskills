@@ -24,7 +24,7 @@ QUAST_BIN="${QUAST_BIN:-$(command -v quast.py || command -v quast || true)}"
 
 source "${WGS_SKILL:-$PWD}/scripts/array_common.sh"
 
-asm="assembly/${sample}/${sample}.fna"
+asm="assembly/${sample}/${sample}.fasta"
 [[ -s "$asm" ]] || { echo "ERROR: assembly missing for $sample: $asm" >&2; exit 2; }
 
 out="qc/quast/${sample}"

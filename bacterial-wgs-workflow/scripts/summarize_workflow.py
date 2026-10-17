@@ -75,7 +75,7 @@ def main():
 
             out.update(parse_fastp(Path(f"qc/fastp/{sid}_QC.json")))
 
-            asm = Path(f"assembly/{sid}/{sid}.fna")
+            asm = Path(f"assembly/{sid}/{sid}.fasta")
             out["assembly_status"] = "COMPLETE" if asm.is_file() and asm.stat().st_size > 0 else "MISSING"
 
             out.update(parse_quast(Path(f"qc/quast/{sid}/report.tsv")))

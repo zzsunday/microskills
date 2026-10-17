@@ -55,7 +55,7 @@ clean_r2="data/clean/${sample}/${sample}_HQ_R2.fq.gz"
 sample_dir="assembly/${sample}"
 outdir="${sample_dir}/unicycler"
 
-if [[ -e "${sample_dir}/${sample}.fna" || -L "${sample_dir}/${sample}.fna" || -e "$outdir" || -L "$outdir" ]]; then
+if [[ -e "${sample_dir}/${sample}.fasta" || -L "${sample_dir}/${sample}.fasta" || -e "$outdir" || -L "$outdir" ]]; then
   echo "ERROR: existing assembly detected for $sample; refusing silent overwrite: $sample_dir" >&2
   exit 4
 fi
@@ -76,9 +76,9 @@ echo "ASSEMBLY_MODE=HYBRID sample=$sample long_platform=${long_platform:-UNKNOWN
   exit 3
 }
 
-cp -n "${outdir}/assembly.fasta" "${sample_dir}/${sample}.fna"
+cp -n "${outdir}/assembly.fasta" "${sample_dir}/${sample}.fasta"
 
-[[ -s "${sample_dir}/${sample}.fna" ]] || {
+[[ -s "${sample_dir}/${sample}.fasta" ]] || {
   echo "ERROR: canonical FASTA missing for $sample" >&2
   exit 3
 }

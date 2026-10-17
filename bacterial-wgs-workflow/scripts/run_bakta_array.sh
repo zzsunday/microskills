@@ -26,7 +26,7 @@ command -v bakta >/dev/null 2>&1 || { echo "ERROR: bakta not found" >&2; exit 12
 
 source "${WGS_SKILL:-$PWD}/scripts/array_common.sh"
 
-asm="assembly/${sample}/${sample}.fna"
+asm="assembly/${sample}/${sample}.fasta"
 [[ -s "$asm" ]] || { echo "ERROR: assembly missing for $sample: $asm" >&2; exit 2; }
 
 out="annotation/${sample}"

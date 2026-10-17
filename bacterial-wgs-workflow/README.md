@@ -242,7 +242,7 @@ circularization; circularity alone does not identify a chromosome or plasmid.
 | Read QC | `qc/fastp/SAMPLE_QC.json`, `SAMPLE_QC.html` |
 | Short-read assembly | `assembly/SAMPLE/spades/contigs.fasta` |
 | Hybrid assembly | `assembly/SAMPLE/unicycler/assembly.fasta` |
-| Canonical assembly, copied from the selected assembler | `assembly/SAMPLE/SAMPLE.fna` |
+| Canonical assembly, copied from the selected assembler | `assembly/SAMPLE/SAMPLE.fasta` |
 | Assembly QC | `qc/quast/SAMPLE/report.tsv` and other QUAST reports |
 | Annotation | `annotation/SAMPLE/SAMPLE.{gff3,gbff,faa,ffn,fna,tsv}` |
 | Slurm logs | `logs/STAGE.JOBID_TASKID.{out,err}` |
