@@ -1,0 +1,13 @@
+# Local HPC bookkeeping and Python caches
+.diskspace*
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Analysis projects and generated results do not belong in the skill repository
+data/
+logs/
+qc/
+assembly/
+annotation/
+summary/
